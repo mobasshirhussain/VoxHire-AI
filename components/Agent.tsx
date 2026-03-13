@@ -149,13 +149,13 @@ const Agent = ({
               <span className="absolute w-24 h-24 rounded-full border border-[#63b3ed]/25 animate-ping" />
             )}
             <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-[#63b3ed]/30 bg-[#161b26]">
-              {/* <Image
-                src="/ai-avatar.png"
+              <Image
+                src="/ai_avatar.png"
                 alt="AI Interviewer"
-                width={64}
-                height={64}
+                width={60}
+                height={60}
                 className="object-cover w-full h-full"
-              /> */}
+              />
             </div>
           </div>
 

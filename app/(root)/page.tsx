@@ -104,7 +104,7 @@ async function Home() {
         <div className="relative z-10 hidden md:block">
           <div className="relative rounded-[20px] overflow-hidden">
             <Image
-              src="/robot.png"
+              src="/robot1.png"
               alt="AI Interview Assistant"
               width={340}
               height={340}

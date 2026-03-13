@@ -117,7 +117,7 @@ export default function AuthForm({ type }: { type: FormType }) {
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2.5">
               <div className="flex items-center justify-center w-9 h-9 rounded-[10px] bg-gradient-to-br from-[#1a4a7a] to-[#0f2a4a] border border-[#63b3ed]/35">
-                <Image src="/logo.svg" alt="VoxHire" width={20} height={20} />
+                <Image src="/logo.svg" alt="VoxHire" width={25} height={25} />
               </div>
               <span
                 className="text-xl font-bold text-[#f0f4ff] tracking-tight"
