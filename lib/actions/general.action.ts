@@ -18,7 +18,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
       .join("");
 
     const { output: object } = await generateText({
-      model: google("gemini-2.0-flash-001"), 
+      model: google("gemini-1.5-flash"), 
       output: Output.object({ 
         schema: feedbackSchema 
       }),
