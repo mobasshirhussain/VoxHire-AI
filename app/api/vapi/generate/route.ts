@@ -7,9 +7,34 @@ export async function GET() {
 }
 
 export async function POST(request: Request){
-    const {type, role, level, techstack, amount, userid} = await request.json()
-
     try {
+        const rawBody = await request.json();
+        
+        // 1. Check if the request is coming from a new Vapi Tool Call (Nested JSON)
+        let dataToUse;
+        if (rawBody?.message?.toolCalls?.[0]?.function?.arguments) {
+            dataToUse = rawBody.message.toolCalls[0].function.arguments;
+        } 
+        // Fallback for Vapi's alternative payload structure
+        else if (rawBody?.message?.toolWithToolCallList?.[0]?.toolCall?.function?.arguments) {
+            dataToUse = rawBody.message.toolWithToolCallList[0].toolCall.function.arguments;
+        }
+        // Fallback for standard Postman/Tutorial Flat JSON
+        else {
+            dataToUse = rawBody;
+        }
+
+        // 2. Safely extract variables with default fallbacks to prevent Firebase crashes
+        const { 
+            role = "Software Engineer", 
+            type = "Technical", 
+            level = "Mid-Level", 
+            techstack = "General", 
+            amount = 3, 
+            userid 
+        } = dataToUse || {};
+
+        // 3. Generate Questions using Gemini 2.5 Flash
         const {text: questions} = await generateText({
             model: google("gemini-2.5-flash"),
             prompt: `Prepare questions for a job interview.
@@ -26,8 +51,12 @@ export async function POST(request: Request){
         Thank you! <3
     `,
         })
+
+        // 4. Save to Firebase
         const interview = {
-            role, type, level,
+            role, 
+            type, 
+            level,
             techstack: techstack ? techstack.split(",") : [],
             questions: JSON.parse(questions),
             userid: userid,
@@ -35,8 +64,10 @@ export async function POST(request: Request){
             // coverImage: getRandomInterviewCover(),
             createdAt: new Date().toISOString()
         }
+        
         await db.collection("interviews").add(interview)
         return Response.json({success: true}, {status: 200})
+        
     } catch (error) {
         console.error(error)
         return Response.json({success:false, error}, {status: 500})
