@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
 import { interviewer } from "@/constants";
 import { createFeedback } from "@/lib/actions/general.action";
+import { getInterviewsByUserId } from "@/lib/actions/general.action";
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -86,10 +87,27 @@ const Agent = ({
       }
     };
 
+    const fetchLatestInterviewAndRedirect = async () => {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        
+        const userInterviews = await getInterviewsByUserId(userId!);
+        
+        if (userInterviews && userInterviews.length > 0) {
+          const newestInterviewId = userInterviews[0].id;
+          router.push(`/interview/${newestInterviewId}`);
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Failed to fetch new interview", error);
+        router.push("/");
+      }
+    };
+
     if (callStatus === CallStatus.FINISHED) {
       if (type === "generate") {
-        // router.push("/");
-        router.push(`/interview/${interviewId}`);
+        fetchLatestInterviewAndRedirect();
       } else {
         handleGenerateFeedback(messages);
       }
