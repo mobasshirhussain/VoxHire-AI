@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
 import { interviewer } from "@/constants";
 import { createFeedback } from "@/lib/actions/general.action";
-import { getInterviewsByUserId } from "@/lib/actions/general.action";
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -73,41 +72,56 @@ const Agent = ({
       setLastMessage(messages[messages.length - 1].content);
     }
 
+    // const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+    //   const { success, feedbackId: id } = await createFeedback({
+    //     interviewId: interviewId!,
+    //     userId: userId!,
+    //     transcript: messages,
+    //     feedbackId,
+    //   });
+    //   if (success && id) {
+    //     router.push(`/interview/${interviewId}/feedback`);
+    //   } else {
+    //     router.push("/");
+    //   }
+    // };
+
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-      const { success, feedbackId: id } = await createFeedback({
-        interviewId: interviewId!,
-        userId: userId!,
-        transcript: messages,
-        feedbackId,
-      });
-      if (success && id) {
-        router.push(`/interview/${interviewId}/feedback`);
-      } else {
-        router.push("/");
+      // 🚨 DIAGNOSTIC 1: Are we actually recording the conversation?
+      console.log("=== 1. TRANSCRIPT BEING SENT ===", messages);
+      
+      if (messages.length === 0) {
+          alert("WARNING: The transcript is empty! Vapi didn't record your words.");
       }
-    };
 
-    const fetchLatestInterviewAndRedirect = async () => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        
-        const userInterviews = await getInterviewsByUserId(userId!);
-        
-        if (userInterviews && userInterviews.length > 0) {
-          const newestInterviewId = userInterviews[0].id;
-          router.push(`/interview/${newestInterviewId}`);
-        } else {
-          router.push("/");
-        }
+          const response = await createFeedback({
+            interviewId: interviewId!,
+            userId: userId!,
+            transcript: messages,
+            feedbackId,
+          });
+          
+          // 🚨 DIAGNOSTIC 2: What did the server say?
+          console.log("=== 2. SERVER RESPONSE ===", response);
+
+          if (response.success && response.feedbackId) {
+            router.push(`/interview/${interviewId}/feedback`);
+          } else {
+            // WE STOPPED THE REDIRECT. Look at the browser console!
+            alert("Feedback failed to generate! Right-click -> Inspect -> Console to see the error.");
+            console.error("SERVER FAILED BECAUSE:", response);
+          }
       } catch (error) {
-        console.error("Failed to fetch new interview", error);
-        router.push("/");
+          alert("A massive crash happened! Check console.");
+          console.error("MASSIVE CRASH:", error);
       }
     };
 
+    
     if (callStatus === CallStatus.FINISHED) {
       if (type === "generate") {
-        fetchLatestInterviewAndRedirect();
+        router.push("/")
       } else {
         handleGenerateFeedback(messages);
       }
@@ -286,9 +300,11 @@ const Agent = ({
               <span className="absolute inset-0 rounded-[14px] border border-[#63b3ed]/40 animate-ping" />
             )}
 
-            <span>
-              {isConnecting ? "Connecting…" : "Start Interview"}
-            </span>
+<span>
+  {type === "generate"
+    ? (isConnecting ? "Connecting…" : "Generate")
+    : (isConnecting ? "Connecting…" : "Start Interview")}
+</span>
           </button>
         ) : (
           <button
@@ -304,7 +320,8 @@ const Agent = ({
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
             </svg>
-            End Interview
+            {type==="generate" ? "End" : "End Interview"}
+            
           </button>
         )}
       </div>
