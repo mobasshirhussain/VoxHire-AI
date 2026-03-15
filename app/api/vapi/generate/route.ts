@@ -9,22 +9,18 @@ export async function GET() {
 export async function POST(request: Request){
     try {
         const rawBody = await request.json();
-        
-        // 1. Check if the request is coming from a new Vapi Tool Call (Nested JSON)
+
         let dataToUse;
         if (rawBody?.message?.toolCalls?.[0]?.function?.arguments) {
             dataToUse = rawBody.message.toolCalls[0].function.arguments;
         } 
-        // Fallback for Vapi's alternative payload structure
         else if (rawBody?.message?.toolWithToolCallList?.[0]?.toolCall?.function?.arguments) {
             dataToUse = rawBody.message.toolWithToolCallList[0].toolCall.function.arguments;
         }
-        // Fallback for standard Postman/Tutorial Flat JSON
         else {
             dataToUse = rawBody;
         }
 
-        // 2. Safely extract variables with default fallbacks to prevent Firebase crashes
         const { 
             role = "Software Engineer", 
             type = "Technical", 
@@ -52,7 +48,6 @@ export async function POST(request: Request){
     `,
         })
 
-        // 4. Save to Firebase
         const interview = {
             role, 
             type, 

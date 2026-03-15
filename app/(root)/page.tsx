@@ -87,7 +87,7 @@ async function Home() {
                       "0 4px 24px rgba(99,179,237,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
                   }}
                 >
-                  Start Practicing
+                  Generate an Interview
                   <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
                     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -125,28 +125,7 @@ async function Home() {
       </section>
 
       
-      <InterviewSection
-        label="History"
-        title="Your Interviews"
-        count={userInterviews?.length}
-        isEmpty={!hasPastInterviews}
-        emptyIcon="🎤"
-        emptyTitle="No interviews yet"
-        emptySub="Your completed sessions will appear here."
-      >
-        {hasPastInterviews &&
-          userInterviews?.map((interview) => (
-            <InterviewCard
-              key={interview.id}
-              userId={user?.id}
-              interviewId={interview.id}
-              role={interview.role}
-              type={interview.type}
-              techstack={interview.techstack}
-              createdAt={interview.createdAt}
-            />
-          ))}
-      </InterviewSection>
+      
 
       <InterviewSection
         label="Explore"
@@ -159,6 +138,30 @@ async function Home() {
       >
         {hasUpcomingInterviews &&
           allInterview?.map((interview) => (
+            <InterviewCard
+              key={interview.id}
+              userId={user?.id}
+              interviewId={interview.id}
+              role={interview.role}
+              type={interview.type}
+              techstack={interview.techstack}
+              createdAt={interview.createdAt}
+            />
+          ))}
+      </InterviewSection>
+
+
+      <InterviewSection
+        label="History"
+        title="Your Interviews"
+        count={userInterviews?.length}
+        isEmpty={!hasPastInterviews}
+        emptyIcon="🎤"
+        emptyTitle="No interviews yet"
+        emptySub="Your completed sessions will appear here."
+      >
+        {hasPastInterviews &&
+          userInterviews?.map((interview) => (
             <InterviewCard
               key={interview.id}
               userId={user?.id}
