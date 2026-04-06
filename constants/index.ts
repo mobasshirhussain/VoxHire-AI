@@ -97,16 +97,11 @@ export const mappings = {
   "aws amplify": "amplify",
 };
 
-export const interviewer: CreateAssistantDTO & {
-  silenceTimeoutSeconds?: number;
-  responseDelaySeconds?: number;
-} = {
+export const interviewer: CreateAssistantDTO  = {
   name: "Interviewer",
   firstMessage:
     "Hello! Thank you for taking the time to speak with me today. I'm excited to learn more about you and your experience.",
 
-  silenceTimeoutSeconds: 1.8,
-  responseDelaySeconds: 0.4,
 
   transcriber: {
     provider: "deepgram",

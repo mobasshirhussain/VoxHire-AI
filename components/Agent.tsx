@@ -72,22 +72,8 @@ const Agent = ({
       setLastMessage(messages[messages.length - 1].content);
     }
 
-    // const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-    //   const { success, feedbackId: id } = await createFeedback({
-    //     interviewId: interviewId!,
-    //     userId: userId!,
-    //     transcript: messages,
-    //     feedbackId,
-    //   });
-    //   if (success && id) {
-    //     router.push(`/interview/${interviewId}/feedback`);
-    //   } else {
-    //     router.push("/");
-    //   }
-    // };
-
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-      // 🚨 DIAGNOSTIC 1: Are we actually recording the conversation?
+
       console.log("=== 1. TRANSCRIPT BEING SENT ===", messages);
       
       if (messages.length === 0) {
@@ -102,13 +88,12 @@ const Agent = ({
             feedbackId,
           });
           
-          // 🚨 DIAGNOSTIC 2: What did the server say?
           console.log("=== 2. SERVER RESPONSE ===", response);
 
           if (response.success && response.feedbackId) {
             router.push(`/interview/${interviewId}/feedback`);
           } else {
-            // WE STOPPED THE REDIRECT. Look at the browser console!
+  
             alert("Feedback failed to generate! Right-click -> Inspect -> Console to see the error.");
             console.error("SERVER FAILED BECAUSE:", response);
           }
